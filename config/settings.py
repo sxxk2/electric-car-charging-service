@@ -146,6 +146,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "user.User"
 
 # SimpleJWT
 REST_FRAMEWORK = {
