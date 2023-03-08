@@ -11,9 +11,12 @@ django-cors-headers = "*"
 python-dotenv = "*"
 requests = "*"
 mysqlclient = "*"
+isort = "*"
+black = "*"
+flake8 = "*"
+pre-commit = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.9"
-python_full_version = "3.9.6"
