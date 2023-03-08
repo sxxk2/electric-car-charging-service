@@ -5,10 +5,10 @@ from apps.utils.timestamp import TimeStampedModel
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("이메일을 입력해주세요.")
-        user = self.model(email=self.normalize_email(email))
+        user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -53,7 +53,7 @@ class PaymentMethod(TimeStampedModel):
     PAYMENT_METHOD_CHOICES = [("card", "신용카드"), ("bank_transfer", "계좌이체")]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payment_methods")
-    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
     card_number = models.CharField(max_length=20, null=True, blank=True)
     bank_name = models.CharField(max_length=50, null=True, blank=True)
     bank_account = models.CharField(max_length=50, null=True, blank=True)
