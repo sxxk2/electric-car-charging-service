@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from apps.user.models import User
+from apps.user.models import PaymentMethod, User
 
 
 # api/users/signup
@@ -61,3 +61,23 @@ class LoginSerializer(TokenObtainPairSerializer):
     class Meta:
         model = User
         fields = ["email", "password"]
+
+
+# api/users/<int:user_id>/payment-methods
+class PaymentMethodSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if data.get("payment_method") == "card":
+            if not data.get("card_number"):
+                raise serializers.ValidationError("카드 번호를 입력해 주세요.")
+            elif data.get("bank_name") or data.get("bank_account"):
+                raise serializers.ValidationError("잘못된 결제 수단입니다.")
+        elif data.get("payment_method") == "bank_transfer":
+            if not data.get("bank_name") and data.get("bank_account"):
+                raise serializers.ValidationError("올바른 결제 정보를 입력해 주세요.")
+            elif data.get("card_number"):
+                raise serializers.ValidationError("잘못된 결제 수단입니다.")
+        return data
+
+    class Meta:
+        model = PaymentMethod
+        fields = ("id", "payment_method", "card_number", "bank_name", "bank_account")
