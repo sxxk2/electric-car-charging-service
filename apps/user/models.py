@@ -68,3 +68,6 @@ class PaymentMethod(TimeStampedModel):
     card_number = models.CharField(max_length=20, null=True, blank=True, unique=True)
     bank_name = models.CharField(max_length=20, null=True, blank=True, choices=BankChoices.choices)
     bank_account = models.CharField(max_length=50, null=True, blank=True, unique=True)
+
+    class Meta:
+        db_table = "payment_methods"
