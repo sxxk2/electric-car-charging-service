@@ -23,6 +23,24 @@ class CouponView(generics.ListCreateAPIView):
         serializer.save(issuer=self.request.user, code=code)
 
 
+# api/coupons/<int:coupon_id>
+class CouponDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    lookup_field = "id"
+    lookup_url_kwarg = "coupon_id"
+
+    queryset = Coupon.objects.all()
+    serializer_class = CouponSerializer
+
+    def patch(self, request, *args, **kwargs):
+        coupon = self.get_object()
+        serializer = self.get_serializer(coupon, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(updated_at=timezone.now())
+        return Response(serializer.data)
+
+
 # api/coupons/register
 class CouponRegisterView(APIView):
     permission_classes = [permissions.IsAuthenticated]
