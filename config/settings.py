@@ -35,7 +35,10 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt.token_blacklist",
 ]
 
-PROJECT_APPS = ["apps.user"]
+PROJECT_APPS = [
+    "apps.user",
+    "apps.coupon",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
