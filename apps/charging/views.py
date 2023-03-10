@@ -23,6 +23,20 @@ class ChargingStationView(generics.ListCreateAPIView):
         return queryset
 
 
+# api/charging-stations/<int:charging_station_id>
+class ChargingStationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = "id"
+    lookup_url_kwarg = "charging_station_id"
+
+    queryset = ChargingStation.objects.all()
+    serializer_class = ChargingStationSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+
 # api/charging-stations/<int:charging_station_id>/chargers
 class ChargerView(generics.ListCreateAPIView):
     serializer_class = ChargerSerializer
