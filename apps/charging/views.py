@@ -38,6 +38,13 @@ class ChargingStationDetailView(generics.RetrieveUpdateDestroyAPIView):
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]
 
+    def patch(self, request, *args, **kwargs):
+        charger = self.get_object()
+        serializer = self.get_serializer(charger, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(updated_at=timezone.now())
+        return Response(serializer.data)
+
 
 # api/charging-stations/<int:charging_station_id>/chargers
 class ChargerView(generics.ListCreateAPIView):
