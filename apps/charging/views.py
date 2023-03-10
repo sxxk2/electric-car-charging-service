@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
@@ -36,6 +38,13 @@ class ChargingStationDetailView(generics.RetrieveUpdateDestroyAPIView):
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser()]
 
+    def patch(self, request, *args, **kwargs):
+        charger = self.get_object()
+        serializer = self.get_serializer(charger, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(updated_at=timezone.now())
+        return Response(serializer.data)
+
 
 # api/charging-stations/<int:charging_station_id>/chargers
 class ChargerView(generics.ListCreateAPIView):
@@ -65,3 +74,27 @@ class ChargerView(generics.ListCreateAPIView):
         if serializer.is_valid(raise_exception=True):
             self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# api/charging-stations/<int:charging_station_id>/chargers/<int:charger_id>
+class ChargerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Charger.objects.all()
+    serializer_class = ChargerSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        charger_id = self.kwargs["charger_id"]
+        charger = get_object_or_404(queryset, id=charger_id, charging_station_id=self.kwargs["charging_station_id"])
+        return charger
+
+    def patch(self, request, *args, **kwargs):
+        charger = self.get_object()
+        serializer = self.get_serializer(charger, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(updated_at=timezone.now())
+        return Response(serializer.data)
